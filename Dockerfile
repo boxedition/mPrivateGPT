@@ -1,5 +1,9 @@
 # Nvidia Cuda Image
-FROM nvidia/cuda:12.1.1-runtime-ubuntu22.04
+FROM nvidia/cuda:12.4.1-devel-ubuntu22.04
+
+# Add CUDA to PATH and LD_LIBRARY_PATH
+ENV PATH="/usr/local/cuda-12.4/bin:${PATH}"
+ENV LD_LIBRARY_PATH="/usr/local/cuda-12.4/lib64:${LD_LIBRARY_PATH}"
 
 # Define arguments
 ARG HUGGING_FACE_TOKEN
@@ -44,6 +48,8 @@ RUN  pip install --upgrade huggingface_hub
 RUN huggingface-cli login --token ${HUGGING_FACE_TOKEN}
 
 RUN poetry install --extras "ui vector-stores-qdrant llms-ollama embeddings-huggingface llms-llama-cpp"
+
+RUN CMAKE_ARGS="-DLLAMA_CUBLAS=on -DCUDA_PATH=/usr/local/cuda-12.4 -DCUDAToolkit_ROOT=/usr/local/cuda-12.4" poetry run pip install --force-reinstall --no-cache-dir llama-cpp-python
 
 RUN poetry run python scripts/setup
 
