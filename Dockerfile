@@ -7,7 +7,7 @@ ENV LD_LIBRARY_PATH="/usr/local/cuda-12.4/lib64:${LD_LIBRARY_PATH}"
 
 # Define arguments
 ARG HUGGING_FACE_TOKEN
-ARG PY_VERSION=3.11.6
+ARG PY_VERSION
 
 # Update and install dependencies
 RUN apt update && apt install -y \
@@ -44,14 +44,14 @@ RUN git clone https://github.com/zylon-ai/private-gpt /app
 WORKDIR /app
 
 # HuggingFace Login (required to download Mistral)
-RUN  pip install --upgrade huggingface_hub
-RUN huggingface-cli login --token ${HUGGING_FACE_TOKEN}
+RUN  pip install --upgrade huggingface_hub && huggingface-cli login --token ${HUGGING_FACE_TOKEN}
 
 RUN poetry install --extras "ui vector-stores-qdrant llms-ollama embeddings-huggingface llms-llama-cpp"
 
-RUN CMAKE_ARGS="-DLLAMA_CUBLAS=on -DCUDA_PATH=/usr/local/cuda-12.4 -DCUDAToolkit_ROOT=/usr/local/cuda-12.4" poetry run pip install --force-reinstall --no-cache-dir llama-cpp-python
-
 RUN poetry run python scripts/setup
+
+RUN CUDACXX='/usr/local/cuda-12/bin/nvcc' CMAKE_ARGS='-DLLAMA_CUBLAS=on' poetry run pip install --force-reinstall --no-cache-dir llama-cpp-python
+
 
 # Make run
 ENTRYPOINT make run
