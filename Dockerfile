@@ -44,7 +44,7 @@ RUN git clone https://github.com/zylon-ai/private-gpt /app
 WORKDIR /app
 
 # HuggingFace Login (required to download Mistral)
-RUN  pip install --upgrade huggingface_hub && huggingface-cli login --token ${HUGGING_FACE_TOKEN}
+RUN pip install --upgrade huggingface_hub && huggingface-cli login --token ${HUGGING_FACE_TOKEN}
 
 # Install dependencies
 RUN poetry install --extras "ui vector-stores-qdrant llms-ollama embeddings-huggingface llms-llama-cpp"
