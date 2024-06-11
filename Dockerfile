@@ -57,6 +57,3 @@ RUN poetry run python scripts/setup
 # Make run
 ENTRYPOINT make run
 EXPOSE 8001
-
-# Folder for external files
-RUN mkdir truth && make ingest ./truth -- --watch
