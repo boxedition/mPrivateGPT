@@ -46,13 +46,17 @@ WORKDIR /app
 # HuggingFace Login (required to download Mistral)
 RUN  pip install --upgrade huggingface_hub && huggingface-cli login --token ${HUGGING_FACE_TOKEN}
 
+# Install dependencies
 RUN poetry install --extras "ui vector-stores-qdrant llms-ollama embeddings-huggingface llms-llama-cpp"
-
 RUN poetry run python scripts/setup
 
-RUN CUDACXX='/usr/local/cuda-12/bin/nvcc' CMAKE_ARGS='-DLLAMA_CUBLAS=on' poetry run pip install --force-reinstall --no-cache-dir llama-cpp-python
+# Activate GPU
+# RUN CUDACXX='/usr/local/cuda-12/bin/nvcc' CMAKE_ARGS='-DLLAMA_CUBLAS=on' poetry run pip install --force-reinstall --no-cache-dir llama-cpp-python
 
 
 # Make run
 ENTRYPOINT make run
 EXPOSE 8001
+
+# Folder for external files
+RUN mkdir truth && make ingest ./truth -- --watch
