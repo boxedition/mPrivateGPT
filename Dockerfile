@@ -53,7 +53,8 @@ RUN poetry run python scripts/setup
 # Activate GPU
 # RUN CUDACXX='/usr/local/cuda-12/bin/nvcc' CMAKE_ARGS='-DLLAMA_CUBLAS=on' poetry run pip install --force-reinstall --no-cache-dir llama-cpp-python
 
+COPY docker-entrypoint.sh /
+RUN chmod +x /docker-entrypoint.sh
 
-# Make run
-ENTRYPOINT make run
+ENTRYPOINT ["/docker-entrypoint.sh"]
 EXPOSE 8001
